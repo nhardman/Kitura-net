@@ -140,10 +140,41 @@ public class HTTPServerRequest: ServerRequest {
     ///
     /// - Returns: an HTTPServerRequest instance
     init (socket: Socket, httpParser: HTTPParser?) {
+        print("*** in init")
         self.socket = socket
         self.httpParser = httpParser
     }
     
+    /// Copy the entire body into a buffer
+    ///
+    /// - Parameter into: An NSMutableData to hold the data in the request.
+    /// - Parameter reset: A Bool to indicate whether the read pointer should be reset
+    /// - Throws: if an error occurs while reading the body.
+    /// - Returns: the number of bytes read.
+    public func copyAllData(into data: inout Data, reset: Bool=true) throws -> Int {
+        guard let httpParser = httpParser else {
+            return 0
+        }
+
+        var latestReadPos = 0
+        if !reset {
+            // get the latest read position so it can be reset after the read.
+            latestReadPos = httpParser.bodyChunk.index
+        }
+        // set the intial read position to the start of the body.
+        httpParser.bodyChunk.rewind()
+
+        var length = httpParser.bodyChunk.fill(data: &data)
+        var bytesRead = length
+        while length > 0 {
+            length = try read(into: &data)
+            bytesRead += length
+        }
+        // now reset the index into the data
+        httpParser.bodyChunk.rewind(latestReadPos)
+        return bytesRead
+    }
+
     /// Read a chunk of the body of the request.
     ///
     /// - Parameter into: An NSMutableData to hold the data in the request.

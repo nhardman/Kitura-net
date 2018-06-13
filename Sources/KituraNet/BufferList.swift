@@ -74,9 +74,12 @@ public class BufferList {
     
     // MARK: Public
     
-    /**
-     Get the number of bytes stored in the `BufferList`.
-    */
+    /// Get the current byte offset in the buffer
+    public var index: Int {
+        return byteIndex
+    }
+
+    /// Get the number of bytes stored in the BufferList
     public var count: Int {
         return localData.length
     }
@@ -250,9 +253,11 @@ public class BufferList {
      writeBuffer.rewind()
      ````
     */
-    public func rewind() {
+    /// Sets the buffer back to the beginning position, the next fill call will take data
+    /// from the beginning of the buffer.
+    public func rewind(_ to: Int=0) {
         
-        byteIndex = 0
+        byteIndex = to
         
     }
     

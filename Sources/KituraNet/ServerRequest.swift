@@ -79,4 +79,12 @@ public protocol ServerRequest: class {
     /// - Throws: Socket.error if an error occurred while reading from the socket
     /// - Returns: The number of bytes read
     func readAllData(into data: inout Data) throws -> Int
+
+    /// Copy the entire body into a buffer
+    ///
+    /// - Parameter into: An NSMutableData to hold the data in the request.
+    /// - Parameter reset: A Bool to indicate whether the read pointer should be reset
+    /// - Throws: if an error occurs while reading the body.
+    /// - Returns: the number of bytes read.
+    func copyAllData(into data: inout Data, reset: Bool) throws -> Int
 }
